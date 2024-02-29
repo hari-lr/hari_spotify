@@ -1,0 +1,132 @@
+---
+title: "My title"
+subtitle: "My subtitle if needed"
+author: 
+  - First author
+  - Another author
+thanks: "Code and data are available at: LINK."
+date: today
+date-format: long
+abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
+format: pdf
+number-sections: true
+bibliography: references.bib
+---
+
+```{r}
+#| include: false
+#| warning: false
+#| message: false
+
+library(tidyverse)
+```
+
+
+# Introduction
+
+
+# Data
+
+## Beyoncé
+
+@fig-beyond
+
+```{r}
+#| echo: false
+
+beyonce <- 
+  readRDS(here::here("data/raw_data/beyonce.rds"))
+```
+
+```{r}
+#| label: fig-beyond
+#| fig-cap: Danceability of Beyonce albums over time
+#| echo: false
+
+beyonce <- as_tibble(beyonce)
+
+beyonce |>
+  filter(album_release_date_precision == "day") |> 
+  mutate(album_release_date = ymd(album_release_date)) |> 
+  ggplot(aes(
+    x = album_release_date,
+    y = danceability,
+    group = album_release_date
+  )) +
+  geom_point(alpha = 0.5) +
+  theme_minimal() +
+  labs(x = "Album release date",
+       y = "Danceability")
+```
+
+
+@tbl-danceability
+
+```{r}
+#| label: tbl-danceability
+#| tbl-cap: Average danceability of each Beyonce album
+#| echo: false
+
+beyonce <- as_tibble(beyonce)
+
+beyonce |>
+  filter(album_release_date_precision == "day") |> 
+  mutate(album_release_date = ymd(album_release_date)) |>
+  summarize(ave_danceability = mean(danceability), .by = "album_name") |> 
+  knitr::kable(
+    col.names = c("Album", "Average danceability"),
+    digits = 3,
+    booktabs = TRUE,
+    linesep = ""
+  )
+```
+
+
+## Fifth Harmony
+
+```{r}
+#| echo: false
+
+fifth_harmony <- 
+  readRDS(here::here("data/raw_data/fifth_harmony.rds"))
+```
+
+
+```{r}
+#| label: fig-fifth
+#| fig-cap: Valence of Fifth Harmony albums over time
+#| echo: false
+
+fifth_harmony <- as_tibble(fifth_harmony)
+
+fifth_harmony |>
+  filter(album_name %in% c("Reflection", "7/27 (Deluxe)", "Fifth Harmony")) |> 
+  mutate(album_release_date = ymd(album_release_date)) |>
+  filter(album_release_date != "2017-10-29") |> 
+  ggplot(aes(x = album_name, y = valence)) +
+  geom_point(alpha = 0.5) +
+  theme_minimal() +
+  labs(x = "Album",
+       y = "Valence")
+  
+
+```
+
+
+
+
+\newpage
+
+\appendix
+
+# Appendix {-}
+
+
+
+
+\newpage
+
+
+# References
+
+
